@@ -1,0 +1,19 @@
+{
+  "name": "rest-suite/lib",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inpu",
+      "email": "theinpu@gmail.com",
+      "homepage": "https://github.com/theinpu"
+    }
+  ],
+  "require": {
+    "slim/slim": "3.5.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rest\\Lib\\" : "./src/Rest/Lib/"
+    }
+  }
+}
