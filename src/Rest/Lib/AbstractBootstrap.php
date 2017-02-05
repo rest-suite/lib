@@ -11,7 +11,7 @@ abstract class AbstractBootstrap
 
     const BAD_HTTP_CODES = [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
         412, 413, 414, 415, 416, 417, 500, 501, 502, 503, 504, 505];
-
+    protected $defaultSettings = [];
     /**
      * Slim application
      *
@@ -85,18 +85,37 @@ abstract class AbstractBootstrap
     }
 
     /**
-     * @return App
-     */
-    public final function getApp()
-    {
-        return $this->app;
-    }
-
-    /**
      * Start application
      */
     public function run()
     {
         $this->app->run();
+    }
+
+    /**
+     * @param string $httpMethod
+     * @param string $pattern
+     * @param string $callable
+     */
+    protected function addRoute($httpMethod, $pattern, $callable)
+    {
+        $settings = $this->getApp()->getContainer()->get('settings');
+        list($controller, $method) = explode(":", $callable);
+        $apiConfig = $this->defaultSettings[$controller];
+        if (isset($settings['api']) && isset($settings['api'][$controller])) {
+            $apiConfig = array_merge($apiConfig, $settings['api'][$controller]);
+        }
+
+        if ($apiConfig[$method]) {
+            $this->getApp()->$httpMethod($pattern, $callable); 
+        }
+    }
+
+    /**
+     * @return App
+     */
+    public final function getApp()
+    {
+        return $this->app;
     }
 }
