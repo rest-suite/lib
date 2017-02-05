@@ -101,6 +101,7 @@ abstract class AbstractBootstrap
     {
         $settings = $this->getApp()->getContainer()->get('settings');
         list($controller, $method) = explode(":", $callable);
+        $controller = trim($controller, '\\');
         $apiConfig = $this->defaultSettings[$controller];
         if (isset($settings['api']) && isset($settings['api'][$controller])) {
             $apiConfig = array_merge($apiConfig, $settings['api'][$controller]);
