@@ -8,6 +8,10 @@ use Slim\Http\Response;
 
 abstract class AbstractBootstrap
 {
+
+    const BAD_HTTP_CODES = [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
+        412, 413, 414, 415, 416, 417, 500, 501, 502, 503, 504, 505];
+
     /**
      * Slim application
      *
@@ -22,9 +26,17 @@ abstract class AbstractBootstrap
      */
     public function __construct(App $app = null)
     {
-        $this->app = is_null($app) ? new App() : $app;
+        $this->app = is_null($app) ? new App($this->loadConfigs()) : $app;
         $this->app->add('Rest\Lib\AbstractBootstrap::processRequest');
         $this->setUpRoutes();
+    }
+
+    /**
+     * @return array
+     */
+    public function loadConfigs()
+    {
+        return [];
     }
 
     public abstract function setUpRoutes();
@@ -50,14 +62,26 @@ abstract class AbstractBootstrap
 
             return $response
                 ->withStatus(
-                    in_array($e->getCode(),
-                        [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411,
-                            412, 413, 414, 415, 416, 417, 500, 501, 502, 503, 504, 505])
-                        ? $e->getCode() : 500)
+                    in_array($e->getCode(), self::BAD_HTTP_CODES) ? $e->getCode() : 500)
                 ->withJson($json);
         }
 
         return $response;
+    }
+
+    /**
+     * Load config helper
+     * @param string $path
+     * @return mixed
+     */
+    public final function loadConfig($path)
+    {
+        $file = realpath($path);
+        if ($file === false || !is_readable($file)) {
+            throw new \InvalidArgumentException("Wrong config '{$path}'");
+        }
+
+        return require_once $file;
     }
 
     /**
