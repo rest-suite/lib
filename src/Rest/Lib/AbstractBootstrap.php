@@ -30,7 +30,7 @@ abstract class AbstractBootstrap
         $this->app->add('Rest\Lib\AbstractBootstrap::processRequest');
         $this->setUpRoutes();
     }
-
+    
     /**
      * @return array
      */
@@ -39,6 +39,7 @@ abstract class AbstractBootstrap
         return [];
     }
 
+    public abstract function defaultSettings();
     public abstract function setUpRoutes();
 
     /**
@@ -102,7 +103,7 @@ abstract class AbstractBootstrap
         $settings = $this->getApp()->getContainer()->get('settings');
         list($controller, $method) = explode(":", $callable);
         $controller = trim($controller, '\\');
-        $apiConfig = $this->defaultSettings[$controller];
+        $apiConfig = $this->defaultSettings()[$controller];
         if (isset($settings['api']) && isset($settings['api'][$controller])) {
             $apiConfig = array_merge($apiConfig, $settings['api'][$controller]);
         }
